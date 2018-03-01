@@ -1,7 +1,0 @@
-sh gradlew assembleDebug
-/Users/bossie/Library/Android/sdk/build-tools/26.0.2/zipalign -v -p 4 app/build/outputs/apk/debug/app-debug.apk app-debug-unsigned-aligned.apk
-echo "android" | /Users/bossie/Library/Android/sdk/build-tools/26.0.2/apksigner sign --ks .debug.jks --out app-debug.apk app-debug-unsigned-aligned.apk
-/Users/bossie/Library/Android/sdk/build-tools/26.0.2/apksigner verify app-debug.apk
-adb uninstall uk.ac.cam.cl.waytotheclinic
-adb install app-debug.apk
-rm *.apk

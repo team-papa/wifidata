@@ -13,13 +13,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="320dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@drawable/drawer_background_corner_darker_compressed"
-        android:fitsSystemWindows="true"
-        app:menu="@menu/activity_draw_drawer" />
-
 </android.support.v4.widget.DrawerLayout>
