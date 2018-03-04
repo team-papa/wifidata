@@ -18,7 +18,7 @@
         android:layout_marginTop="8dp"
         android:ems="20"
         android:textColor="@color/colorRed"
-        android:text="Dummy Map"
+        android:text="I studied interaction design, honest."
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
