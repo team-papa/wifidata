@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.NavigationView;
@@ -38,13 +39,36 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class LandingPage  extends AppCompatActivity implements LocationFragment.LocationListener {
     private final String LOCATION_FRAGMENT_TAG = "location-fragment";
     private final int LOCATION_PERMISSIONS = 1;
 
-    private String[] places = new String[]{"Belgium", "Frodo", "France", "Italy", "Germany", "Spain"};
-    private Location mCurrentLocation;
+    private int currentLat;
+    private int currentFloor;
+    private int currentPosition = 0;
+
+    private List<Location> locations;
+    private List<WifiLocation> model;
+
+    private WifiLocater wl;
+
+    private void updateLocation(Location l) {
+        currentLat = (int) l.getLatitude();
+        currentFloor = (int) l.getAltitude();
+
+        TextView tv = findViewById(R.id.editText);
+        tv.setText(currentLat + " " + currentFloor);
+        tv.invalidate();
+        tv.requestLayout();
+
+        Log.w("waytotheclinic", model.toString());
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +80,57 @@ public class LandingPage  extends AppCompatActivity implements LocationFragment.
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction().add(locationFragment, LOCATION_FRAGMENT_TAG).commit();
         fm.beginTransaction().replace(R.id.map_id, mapFragment).commit();
+
+        wl = new WifiLocater(getWifiManager());
+
+        findViewById(R.id.ae_button).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.w("waytotheclinic", "hamburger");
+
+                Map<String, Integer> r = wl.scan();
+                model.add(new WifiLocation(currentLat, 0, currentFloor, r));
+
+                try {
+                    if (++currentPosition >= locations.size()) {
+                        wl.createModel(model);
+                        Log.w("waytotheclinic", getFilesDir().toString());
+
+                        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+                        File f = new File(path + File.separator + "wifiModel.ser");
+                        wl.saveModel(f);
+                        
+                        TextView tv = findViewById(R.id.editText);
+                        tv.setText("Complete");
+                        tv.invalidate();
+                        tv.requestLayout();
+                    } else {
+                        updateLocation(locations.get(currentPosition));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        locations = new ArrayList<>();
+        locations.add(makeLoc(0, 0));
+        locations.add(makeLoc(0, 1));
+        locations.add(makeLoc(0, 2));
+        locations.add(makeLoc(1, 0));
+        locations.add(makeLoc(1, 1));
+        locations.add(makeLoc(1, 2));
+
+        model = new ArrayList<>();
+
+        updateLocation(locations.get(0));
+    }
+
+    private Location makeLoc(int lat, int floor) {
+        Location l = new Location("");
+        l.setLatitude(lat);
+        l.setAltitude(floor);
+
+        return l;
     }
 
     @Override
@@ -105,11 +180,5 @@ public class LandingPage  extends AppCompatActivity implements LocationFragment.
     @Override
     public void startLocationUpdates(LocationRequest lr, LocationCallback lc) {
         LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(lr, lc, null);
-    }
-
-    @Override
-    public void updateLocation(Location l) {
-        // TODO: implement this
-        Log.i("waytotheclinic", "waytotheclinic location updated: " + l.toString());
     }
 }

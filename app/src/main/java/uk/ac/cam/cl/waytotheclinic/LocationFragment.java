@@ -58,7 +58,6 @@ public class LocationFragment extends Fragment {
         void requestPermissions();
         WifiManager getWifiManager();
         void startLocationUpdates(LocationRequest lr, LocationCallback lc);
-        void updateLocation(Location l);
     }
 
     private LocationListener callback;
@@ -107,12 +106,7 @@ public class LocationFragment extends Fragment {
 
             locationCallback = new LocationCallback() {
                 @Override
-                public void onLocationResult(LocationResult locRes) {
-                    for (Location l : locRes.getLocations()) {
-                        locationCallback(true, l);
-                        break;
-                    }
-                }
+                public void onLocationResult(LocationResult locRes) {}
             };
 
             callback.startLocationUpdates(locationRequest, locationCallback);
@@ -134,7 +128,6 @@ public class LocationFragment extends Fragment {
         } else {
             if (intermediateValue != null) {
                 // TODO: incorporate WiFi location in return value
-                callback.updateLocation(l);
                 intermediateValue = null;
             }
         }

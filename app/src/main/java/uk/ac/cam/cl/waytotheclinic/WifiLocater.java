@@ -23,7 +23,7 @@ public class WifiLocater {
         wifiM = wm;
     }
 
-    private Map<String, Integer> scan() {
+    public Map<String, Integer> scan() {
         List<ScanResult> res = wifiM.getScanResults();
 
         Map<String, Integer> strengths = new HashMap<>();
